@@ -35,15 +35,21 @@ def return_supplemental_info(driver, url):
     
     city_xpath = "//div[@class='project-description']/div/div[2]/div/div[4]"
     state_xpath = "//div[@class='project-description']/div/div[4]/div/div[2]"
-    department_type_xpath = "//div[@class='project-description']/div/div[2]/div/div[2]"
-    organization_type_xpath = "//div[@class='project-description']/div/div[2]/div/div[4]/div"
+    department_type_xpath = "//div[@class='project-description']/div/div[3]/div/div[2]"
+    organization_type_xpath = "//div[@class='project-description']/div/div[3]/div/div[4]/div"
     
     name_attrib = (detailed_info.find_element(By.XPATH, ".//div[@class='data-info']/a").text).strip()
     title_attrib = (detailed_info.find_elements(By.XPATH, ".//*[@class='data-info']")[1].text).strip()
     city_attrib = (driver.find_element(By.XPATH, city_xpath).text).strip()
     state_attrib = (driver.find_element(By.XPATH, state_xpath).text).strip()
     department_type_attrib = (driver.find_element(By.XPATH, department_type_xpath).text).strip()
-    organization_type_attrib = (driver.find_element(By.XPATH, organization_type_xpath).text).strip()
+
+    try:
+        organization_type_attrib = (driver.find_element(By.XPATH, organization_type_xpath).text).strip()
+
+    except NoSuchElementException:
+        print("No Org Type Found!")
+        organization_type_attrib = ""
 
     show_email_button = driver.find_element(By.XPATH, "//button[contains(text(), 'View Email')]")
     print("DEBUG: 'view email' button found!")
@@ -120,8 +126,8 @@ def build_email_dictionary(url_csv_path, json_dump_file, continue_index=None):
                                         'organization_type' : organization_type_attrib
                 }
 
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
     finally:
         print("Writing json...")
