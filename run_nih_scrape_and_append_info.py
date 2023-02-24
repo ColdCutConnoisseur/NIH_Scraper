@@ -11,6 +11,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 
+
+
 #CONSTANTS
 NIH_SEARCH_URL = "https://reporter.nih.gov/"
 
@@ -290,7 +292,7 @@ def parse_name(candidate_full_name):
 
     return [first_name, middle_initial, last_name]
 
-def format_and_output_to_csv(email_lookup_dict, candidate_out_dict, act_codes_dict, csv_out_path):
+def format_and_output_to_csv(supplemental_lookup_dict, candidate_out_dict, act_codes_dict, csv_out_path):
     header_row = ["First Name", "Middle Initial", "Last Name", "Project Leader", "Title", "Email", "Organization", "Organization - City & State", "# of Grants", "Total Amount of Grants", "Project Type", "Project Data"]
     out_data = [header_row]
     
@@ -299,10 +301,14 @@ def format_and_output_to_csv(email_lookup_dict, candidate_out_dict, act_codes_di
         # Fetch data from email dict
         name_stripped = candidate_full_name.strip()
 
-        dict_data = email_lookup_dict[name_stripped]
+        dict_data = supplemental_lookup_dict[name_stripped]
 
         title = dict_data["title"]
         email = dict_data["email"]
+        city = dict_data["city"]
+        state = dict_data["state"]
+        department_type = dict_data["department_type"]
+        organization_type = dict_data["organization_type"]
 
         first_name, middle_initial, last_name = parse_name(candidate_full_name)     
 
@@ -322,6 +328,10 @@ def format_and_output_to_csv(email_lookup_dict, candidate_out_dict, act_codes_di
         project_data = json.dumps(candidate_projects, indent=4)
 
         org_city_state_placeholder = 'N/A'
+
+        dep_type =
+
+        org_type =
 
         raw_grant_strings = [project['FY_total_cost'] for project in projects]
 
@@ -344,8 +354,8 @@ def main(driver, supplemental_info_dict_path, filtered_url, csv_out_path):
     print("Loading supplemental info dict...")
     supp_info_dict = {}
 
-    with open("all_emails_dict.json", 'r') as json_in:
-        email_lookup_dict = json.load(json_in)
+    with open(supplemental_info_dict_path, 'r') as json_in:
+        supp_info_dict = json.load(json_in)
 
     driver.get("https://reporter.nih.gov/")
     time.sleep(5)
@@ -365,12 +375,12 @@ def main(driver, supplemental_info_dict_path, filtered_url, csv_out_path):
     print("Scraping projects...")
     candidate_out_dict, act_codes_dict = scrape_project_data(driver)
 
-    format_and_output_to_csv(email_lookup_dict, candidate_out_dict, act_codes_dict, csv_out_path)
+    format_and_output_to_csv(supp_info_dict, candidate_out_dict, act_codes_dict, csv_out_path)
 
 
 if __name__ == "__main__":
     DRIVER = uc.Chrome()
-    SUPP_DICT_PATH = ""
+    SUPP_DICT_PATH = "final_supplemental_dict.json"
     FILTERED_URL = "https://reporter.nih.gov/search/y8yzHpL31UOOU0n03twRHw/projects"
     CANDIDATE_CSV_PATH = "./csvs/test_02_24_23_compile.csv"
 
