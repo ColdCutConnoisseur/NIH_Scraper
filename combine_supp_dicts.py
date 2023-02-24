@@ -2,7 +2,7 @@ import json
 
 
 if __name__ == "__main__":
-    DICTS_TO_COMBINE = []
+    DICTS_TO_COMBINE = ["candidate_supplemental_info1.json", "candidate_supplemental_info2.json", "candidate_supplemental_info3.json"]
     COMBINED_OUT = "final_supplemental_dict.json"
     
     combined_dict = {}
