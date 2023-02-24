@@ -8,7 +8,7 @@ Take a filtered search query and scrape data about potential candidates.
     
 2. Next, set first arg of the __build_email_dictionary__ call to match the above **CANDIDATE_CSV_PATH**.  Also set the second argument to the output json  file that will house the dictionary containing the scraped supplemental candidate info.  Then run ```fetch_candidate_supplemental_info.py``` script to visit each of the urls pulled from step 1.
 
-3.
+3.  Set internal parameters inside and then run ```combine_supp_dicts.py```.  This is a helper script that will combine the multiple json files containing supplemental candidate info.  Multiple files might exist because of errors when running the scraping process.
 
 
 
