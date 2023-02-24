@@ -12,7 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 
-def return_name_title_email(driver, url):
+def return_supplemental_info(driver, url):
     # Find 'detailed-info' box
     short_wait = WebDriverWait(driver, 2)
     med_wait = WebDriverWait(driver, 15)
@@ -32,9 +32,18 @@ def return_name_title_email(driver, url):
     detailed_info = med_wait.until(ec.visibility_of_element_located((By.XPATH, d_info_xpath)))
 
     print("DEBUG: 'detailed info' box found!")
-
+    
+    city_xpath = "//div[@class='project-description']/div/div[2]/div/div[4]"
+    state_xpath = "//div[@class='project-description']/div/div[4]/div/div[2]"
+    department_type_xpath = "//div[@class='project-description']/div/div[2]/div/div[2]"
+    organization_type_xpath = "//div[@class='project-description']/div/div[2]/div/div[4]/div"
+    
     name_attrib = (detailed_info.find_element(By.XPATH, ".//div[@class='data-info']/a").text).strip()
     title_attrib = (detailed_info.find_elements(By.XPATH, ".//*[@class='data-info']")[1].text).strip()
+    city_attrib = (driver.find_element(By.XPATH, city_xpath).text).strip()
+    state_attrib = (driver.find_element(By.XPATH, state_xpath).text).strip()
+    department_type_attrib = (driver.find_element(By.XPATH, department_type_xpath).text).strip()
+    organization_type_attrib = (driver.find_element(By.XPATH, organization_type_xpath).text).strip()
 
     show_email_button = driver.find_element(By.XPATH, "//button[contains(text(), 'View Email')]")
     print("DEBUG: 'view email' button found!")
@@ -49,14 +58,10 @@ def return_name_title_email(driver, url):
     try:
         email_attrib_parent = driver.find_elements(By.XPATH, ".//*[@class='data-info']")[2]
         print("'Email' attrib parent found!  Looking for email text...")
-        
-        #email_attrib = (email_attrib_parent.find_element(By.XPATH, ".//a").text).strip()
 
         email_attrib = (email_attrib_parent.find_element(By.TAG_NAME, "a").text).strip()
 
     except (TimeoutException, NoSuchElementException):
-        # captcha_check = driver.find_element(By.XPATH, "//div[@class='rc-imageselect-payload']")
-
         print("Assuming ReCaptcha required...  Solve manually then continue...")
         user_in = input()
 
@@ -66,12 +71,16 @@ def return_name_title_email(driver, url):
     print(f"NAME ATTRIB: {name_attrib}")
     print(f"TITLE ATTRIB: {title_attrib}")
     print(f"EMAIL ATTRIB: {email_attrib}")
+    print(f"CITY ATTRIB: {city_attrib}")
+    print(f"STATE ATTRIB: {state_attrib}")
+    print(f"D TYPE ATTRIB: {department_type_attrib}")
+    print(f"ORG TYPE ATTRIB: {organization_type_attrib}")
 
-    return [name_attrib, title_attrib, email_attrib]
+    return [name_attrib, title_attrib, email_attrib, city_attrib, state_attrib, department_type_attrib, organization_type_attrib]
 
 
 def build_email_dictionary(url_csv_path, json_dump_file, continue_index=None):
-    email_dict = {}
+    supp_dict = {}
     urls_to_visit = []
 
     with open(url_csv_path, 'r') as csv_in:
@@ -98,12 +107,17 @@ def build_email_dictionary(url_csv_path, json_dump_file, continue_index=None):
 
             print(f"Current Url Index: {ct}")
 
-            name_attrib, title_attrib, email_attrib = return_name_title_email(driver, url)
+            name_attrib, title_attrib, email_attrib, city_attrib, state_attrib, department_type_attrib, organization_type_attrib = \
+                    return_supplemental_info(driver, url)
 
-            if name_attrib not in list(email_dict.keys()):
-                email_dict[name_attrib] = {
+            if name_attrib not in list(supp_dict.keys()):
+                supp_dict[name_attrib] = {
                                         'title' : title_attrib,
-                                        'email' : email_attrib
+                                        'email' : email_attrib,
+                                        'city'  : city_attrib,
+                                        'state' : state_attrib,
+                                        'department_type'   : department_type_attrib,
+                                        'organization_type' : organization_type_attrib
                 }
 
     except:
@@ -112,14 +126,14 @@ def build_email_dictionary(url_csv_path, json_dump_file, continue_index=None):
     finally:
         print("Writing json...")
         with open(json_dump_file, 'w') as json_out:
-            json.dump(email_dict, json_out)
+            json.dump(supp_dict, json_out)
 
         print("Write complete!")
 
         driver.close()
 
 if __name__ == "__main__":
-    build_email_dictionary("./url_paths/email_urls1.csv", "emails6.json", continue_index=1101)
+    build_email_dictionary("./url_paths/email_urls1.csv", "candidate_supplemental_info1.json", continue_index=None)
 
 
 
