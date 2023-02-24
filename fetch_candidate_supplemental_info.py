@@ -133,7 +133,7 @@ def build_email_dictionary(url_csv_path, json_dump_file, continue_index=None):
         driver.close()
 
 if __name__ == "__main__":
-    build_email_dictionary("./url_paths/email_urls1.csv", "candidate_supplemental_info1.json", continue_index=None)
+    build_email_dictionary("./url_paths/candidate_supplemental_info.csv", "candidate_supplemental_info1.json", continue_index=None)
 
 
 
