@@ -57,8 +57,8 @@ def return_supplemental_info(driver, url):
     #show_email_button.click()
     driver.execute_script("arguments[0].click();", show_email_button)
 
-    print("Sleeping for 7 seconds...")
-    time.sleep(7)
+    print("Sleeping for 4 seconds...")
+    time.sleep(4)
     print("Sleep exited!")
 
     try:
@@ -139,7 +139,7 @@ def build_email_dictionary(url_csv_path, json_dump_file, continue_index=None):
         driver.close()
 
 if __name__ == "__main__":
-    build_email_dictionary("./url_paths/candidate_supplemental_info.csv", "candidate_supplemental_info1.json", continue_index=None)
+    build_email_dictionary("./url_paths/candidate_supplemental_info.csv", "candidate_supplemental_info3.json", continue_index=326)
 
 
 
