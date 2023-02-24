@@ -15,5 +15,5 @@ if __name__ == "__main__":
 
         combined_dict |= loaded_dict  # Fancy python3.10+ syntax
 
-    with open(, 'w') as json_out:
+    with open(COMBINED_OUT, 'w') as json_out:
         json.dump(combined_dict, json_out)
