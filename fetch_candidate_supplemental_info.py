@@ -262,9 +262,9 @@ if __name__ == "__main__":
     import project_config
 
     URL_CSV_PATH = project_config.SUPPLEMENTAL_INFO_URL_PATH
-    CURRENT_OUTPUT_PATH = f"./supp_info/{project_config.SCRAPE_TITLE}_candidate_supplemental_info1.json"
+    CURRENT_OUTPUT_PATH = f"./supp_info/{project_config.SCRAPE_TITLE}_candidate_supplemental_info2.json"
 
-    build_email_dictionary(URL_CSV_PATH, CURRENT_OUTPUT_PATH) #, continue_index=73)
+    build_email_dictionary(URL_CSV_PATH, CURRENT_OUTPUT_PATH, continue_index=232)
 
 
 

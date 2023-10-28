@@ -6,7 +6,7 @@ import json
 
 
 
-def combine_files_and_show_duplicates(files_list, out_path, aggregate_list=[], out_path_final=None):
+def combine_files_and_show_duplicates(files_list, aggregate_list=[], out_path_final=None):
     """aggregate_list --> If run already, provide list of names to aggregate data for"""
     duplicate_dict = {} # Find names appearing multiple times across differing files
 
@@ -16,6 +16,7 @@ def combine_files_and_show_duplicates(files_list, out_path, aggregate_list=[], o
 
     all_combined_rows = []
 
+    # Row index constant
     PL_INDEX = 3
 
     for file_path in files_list:
@@ -40,6 +41,7 @@ def combine_files_and_show_duplicates(files_list, out_path, aggregate_list=[], o
                         if name in duplicate_dict.keys():
                             duplicate_dict[name] += 1
 
+                            # This block only executes if 'agg_list' provided
                             if len(aggregate_list) > 0:
                                 if name in aggregate_list:
 
@@ -137,33 +139,38 @@ def combine_files_and_show_duplicates(files_list, out_path, aggregate_list=[], o
                             duplicate_dict[name] = 1
                             all_combined_rows.append(row)
 
-    # Write to final CSV
-    with open(out_path_final, 'w') as final_out:
-        csv_writer = csv.writer(final_out)
-        csv_writer.writerow(header_row)
-        csv_writer.writerows(all_combined_rows)
+    if out_path_final:
 
-        # Then build and write combined rows
-        if len(aggregated_data_dict.keys()) > 0:
-            for k, v in aggregated_data_dict.items():
-                new_row = v['row_constants']
-                new_row.append(v['grant_sums'])
-                new_row.append(v['grant_totals'])
-                new_row.append(", ".join(v['ptypes']))
-                new_row.append(v['data_dict'])
+        # Screen out first record for all dupe candidates that was added
+        refined_list = []
 
-                # Write new row
-                csv_writer.writerow(new_row)
+        for record in all_combined_rows:
+            if record[3] in aggregate_list:
+                pass
+            else:
+                refined_list.append(record)
 
-                # FOR REFERENCE
-                #{'row_constants' : row[0:11],
-                #                                                        'grant_sums' : int(row[11]),
-                #                                                        'grant_totals' : float(row[12]),
-                #                                                        'ptypes': row[13].split(','),
-                #                                                        'data_dict' : json.loads(row[14])}
+        # Write to final CSV
+        with open(out_path_final, 'w') as final_out:
+            csv_writer = csv.writer(final_out)
+            csv_writer.writerow(header_row)
+            csv_writer.writerows(refined_list)
+
+            # Then build and write combined rows
+            if len(aggregated_data_dict.keys()) > 0:
+                for k, v in aggregated_data_dict.items():
+                    new_row = v['row_constants']
+                    new_row.append(v['grant_sums'])
+                    new_row.append(v['grant_totals'])
+                    new_row.append(", ".join(v['ptypes']))
+                    new_row.append(v['data_dict'])
+
+                    # Write new row
+                    csv_writer.writerow(new_row)
 
 
-    print("Combined CSV written!")
+
+        print("Combined CSV written!")
 
     print("\n")
 
@@ -177,29 +184,48 @@ def combine_files_and_show_duplicates(files_list, out_path, aggregate_list=[], o
             agg_list_for_next_run.append(key)
 
     print(agg_list_for_next_run)
+    return agg_list_for_next_run
 
         
-
-
-
 
 if __name__ == "__main__":
     import os
 
     BASE_PATH = os.path.abspath(".")
-    FILE_PARENT_FOLDER = "/rural_project_remainder/"
+    FILE_PARENT_FOLDER = "/pn2/"
     FULL_PATH = BASE_PATH + FILE_PARENT_FOLDER
 
-    FILES_LIST = ["." + FILE_PARENT_FOLDER + file for file in os.listdir(FULL_PATH) if os.path.isfile(file) and "split.csv" in file]
+    print(FULL_PATH)
+
+    print(os.listdir(FULL_PATH))
+
+    # List all files in directory
+    FILES_LIST = ["." + FILE_PARENT_FOLDER + file for file in os.listdir(FULL_PATH) if "split.csv" in file] #if os.path.isfile(file) and "split.csv" in file]
 
     print(f"Found {len(FILES_LIST)} files!")
 
-    OUT_PATH = "./acmed_10_12_23_combined.csv"
+    #OUT_PATH = "./acmed_10_18_23_peripheral_nerve_neuro_combined.csv"
 
 
-    OUT_PATH_F = "./acmed_10_12_23_combined_final.csv"
-    prev_dupe_list = ['RHODES, SCOTT D', 'WATTS-TAFFE, SUSAN', 'ADAMS, ALEXANDRA K.', 'BRUCE, MARTHA L', 'MAHONEY, JANE E', 'BEARDEN, JAMES D', 'BUCHWALD, DEDRA S', 'PEDERSEN, MAJA', 'KARLINER, LEAH S', 'HOWARTH, MARILYN', 'JAYADEV, SUMAN', 'MCEVOY, LINDA KATHLEEN', 'ELK, RONIT', 'JARAMILLO, ELISE TROTT', 'JAMES, KATHERINE A', 'LIN, SHAO', 'ROBERSON, ERIK D', 'GOINS, R. TURNER', 'WARRY, WAYNE RICHARD', 'HOLSTEIN, SARAH A', 'DENNY, ANDREA', 'COOK, ROBERT L', 'JANEVIC, MARY ROSE', 'LU, QUAN', 'ROBERTS, SCOTT', 'TANG, FENGYAN', 'LEWIS, JORDAN PAUL', 'GLUCK, MARK A']
+    OUT_PATH_F = "./acmed_10_18_23_peripheral_nerve_two_combined_final.csv"
 
+    # First run find dupes
+    candidate_dupe_list = combine_files_and_show_duplicates(FILES_LIST)
 
+    combine_files_and_show_duplicates(FILES_LIST, aggregate_list=candidate_dupe_list, out_path_final=OUT_PATH_F)
 
-    combine_files_and_show_duplicates(FILES_LIST, OUT_PATH, aggregate_list=prev_dupe_list, out_path_final=OUT_PATH_F)
+    # Check dupes again afterwards
+    processed_candidates = []
+
+    with open(OUT_PATH_F, 'r') as inspect_csv:
+        csv_reader = csv.reader(inspect_csv)
+
+        for row in csv_reader:
+            name = row[3]
+
+            if name not in processed_candidates:
+                processed_candidates.append(name)
+
+            else:
+                print("Dupe still present!")
+                print(name)
