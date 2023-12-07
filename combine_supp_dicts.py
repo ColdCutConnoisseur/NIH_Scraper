@@ -17,11 +17,17 @@ if __name__ == "__main__":
 
     SUPP_INFO_DIRECTORY = "./supp_info/"
 
-    DICTS_TO_COMBINE = create_sub_files_list(SUPP_INFO_DIRECTORY, project_config.SCRAPE_TITLE, 1, 1)
+    DICTS_TO_COMBINE = create_sub_files_list(SUPP_INFO_DIRECTORY, project_config.SCRAPE_TITLE, 1, 7)
 
 
     test_list = [
-        SUPP_INFO_DIRECTORY + f"{project_config.SCRAPE_TITLE}_candidate_supplemental_info1.json"
+        SUPP_INFO_DIRECTORY + f"{project_config.SCRAPE_TITLE}_candidate_supplemental_info1.json",
+        SUPP_INFO_DIRECTORY + f"{project_config.SCRAPE_TITLE}_candidate_supplemental_info2.json",
+        SUPP_INFO_DIRECTORY + f"{project_config.SCRAPE_TITLE}_candidate_supplemental_info3.json",
+        SUPP_INFO_DIRECTORY + f"{project_config.SCRAPE_TITLE}_candidate_supplemental_info4.json",
+        SUPP_INFO_DIRECTORY + f"{project_config.SCRAPE_TITLE}_candidate_supplemental_info5.json",
+        SUPP_INFO_DIRECTORY + f"{project_config.SCRAPE_TITLE}_candidate_supplemental_info6.json",
+        SUPP_INFO_DIRECTORY + f"{project_config.SCRAPE_TITLE}_candidate_supplemental_info7.json"
     ]
 
 

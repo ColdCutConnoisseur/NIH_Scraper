@@ -3,7 +3,5 @@ __pycache__/
 venv/
 *_compile.csv
 *_compile_split.csv
-*.csv
-*.json
 past_projects_output/
 run_nih_scrape_and_append_info.py

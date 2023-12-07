@@ -4,6 +4,7 @@ import time
 import json
 import sys
 import csv
+import datetime
 
 import undetected_chromedriver as uc
 #from zyte_smartproxy_selenium import webdriver # proxy driver
@@ -16,6 +17,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
 from project_config import CHROME_USER_PROFILE_PATH, CHROME_PROFILE_NAME
+from captcha_solver_functionality import solve_captcha
 
 class ReLoopError(Exception):
     pass
@@ -135,7 +137,7 @@ def return_supplemental_info(driver, url, on_refresh=False):    # project_id_fil
 
         driver.execute_script("arguments[0].click();", show_email_button)
 
-        sleep_time = 5
+        sleep_time = 15
         print(f"Sleeping for {sleep_time} seconds...")
         time.sleep(sleep_time)
         print("Sleep exited!")
@@ -150,9 +152,15 @@ def return_supplemental_info(driver, url, on_refresh=False):    # project_id_fil
             print("Assuming ReCaptcha required...  Solve manually then continue...")
 
             # delete_cache(driver)
-            
-            user_in = input()
 
+            print("Attempting to solve Captcha...")
+            solve_captcha(driver)
+            
+            #user_in = input("Look good?")
+
+            time.sleep(2)
+
+            # Continue with grabbing email
             email_attrib_parent = driver.find_elements(By.XPATH, ".//*[@class='data-info']")[2]
             email_attrib = (email_attrib_parent.find_element(By.XPATH, ".//a").text).strip()
             
@@ -214,6 +222,9 @@ def build_email_dictionary(url_csv_path, json_dump_file, continue_index=None):
 
             print(f"Current Url Index: {ct}")
 
+            now = datetime.datetime.now()
+            print(now)
+
             try:
                 name_attrib, title_attrib, email_attrib, city_attrib, state_attrib, department_type_attrib, organization_type_attrib = \
                         return_supplemental_info(driver, url)
@@ -262,9 +273,9 @@ if __name__ == "__main__":
     import project_config
 
     URL_CSV_PATH = project_config.SUPPLEMENTAL_INFO_URL_PATH
-    CURRENT_OUTPUT_PATH = f"./supp_info/{project_config.SCRAPE_TITLE}_candidate_supplemental_info2.json"
+    CURRENT_OUTPUT_PATH = f"./supp_info/{project_config.SCRAPE_TITLE}_candidate_supplemental_info6.json"
 
-    build_email_dictionary(URL_CSV_PATH, CURRENT_OUTPUT_PATH, continue_index=232)
+    build_email_dictionary(URL_CSV_PATH, CURRENT_OUTPUT_PATH, continue_index=76)
 
 
 
