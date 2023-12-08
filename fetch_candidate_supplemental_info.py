@@ -137,7 +137,7 @@ def return_supplemental_info(driver, url, on_refresh=False):    # project_id_fil
 
         driver.execute_script("arguments[0].click();", show_email_button)
 
-        sleep_time = 15
+        sleep_time = 7
         print(f"Sleeping for {sleep_time} seconds...")
         time.sleep(sleep_time)
         print("Sleep exited!")
@@ -162,8 +162,12 @@ def return_supplemental_info(driver, url, on_refresh=False):    # project_id_fil
 
             # Continue with grabbing email
             email_attrib_parent = driver.find_elements(By.XPATH, ".//*[@class='data-info']")[2]
-            email_attrib = (email_attrib_parent.find_element(By.XPATH, ".//a").text).strip()
-            
+
+            try:
+                email_attrib = (email_attrib_parent.find_element(By.XPATH, ".//a").text).strip()
+            except NoSuchElementException:
+                print("NSE Error!")
+                time.sleep(60*5)
             #time.sleep(60)
             #raise ReLoopError
 
@@ -273,9 +277,9 @@ if __name__ == "__main__":
     import project_config
 
     URL_CSV_PATH = project_config.SUPPLEMENTAL_INFO_URL_PATH
-    CURRENT_OUTPUT_PATH = f"./supp_info/{project_config.SCRAPE_TITLE}_candidate_supplemental_info6.json"
+    CURRENT_OUTPUT_PATH = f"./supp_info/{project_config.SCRAPE_TITLE}_candidate_supplemental_info8.json"
 
-    build_email_dictionary(URL_CSV_PATH, CURRENT_OUTPUT_PATH, continue_index=76)
+    build_email_dictionary(URL_CSV_PATH, CURRENT_OUTPUT_PATH, continue_index=361)
 
 
 
